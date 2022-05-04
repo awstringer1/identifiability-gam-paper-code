@@ -35,7 +35,7 @@ smooth <- list(s(x1))
 
 resultspath <- tempdir()
 if (!dir.exists(resultspath)) dir.create(resultspath)
-tmbpath <- "~/work/projects/concurvity-gam/code/tmb/poisson_gam" # TODO: change this
+tmbpath <- "tmb/poisson_gam"
 
 ## Compile TMB Code ----
 # compile(paste0(tmbpath,".cpp"))
