@@ -96,6 +96,8 @@ lines(preddat$time,fit_stz_time-pred_center_time + 2*se_stz_time,lty='dashed')
 lines(preddat$time,fit_pc_time)
 lines(preddat$time,fit_pc_time - 2*se_pc_time,lty='dotted')
 lines(preddat$time,fit_pc_time + 2*se_pc_time,lty='dotted')
+
+rug(preddat$time,lwd=.1)
 dev.off()
 
 pdf(file = file.path(resultspath,'chicago-pm10-plot.pdf'),width=14,height=7)
@@ -106,6 +108,8 @@ lines(preddat$pm10,fit_stz_pm10-pred_center_pm10 + 2*se_stz_pm10,lty='dashed')
 lines(preddat$pm10,fit_pc_pm10)
 lines(preddat$pm10,fit_pc_pm10 - 2*se_pc_pm10,lty='dotted')
 lines(preddat$pm10,fit_pc_pm10 + 2*se_pc_pm10,lty='dotted')
+
+rug(preddat$pm10,lwd=.2)
 dev.off()
 
 # Average difference in standard errors
