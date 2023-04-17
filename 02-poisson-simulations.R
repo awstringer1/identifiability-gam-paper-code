@@ -8,6 +8,7 @@
 
 ## Load Libraries ----
 library(tidyverse)
+library(here)
 
 library(mgcv)
 library(TMB)
@@ -35,10 +36,10 @@ smooth <- list(s(x1))
 
 resultspath <- tempdir()
 if (!dir.exists(resultspath)) dir.create(resultspath)
-tmbpath <- "tmb/poisson_gam"
+tmbpath <- file.path(here::here(),"tmb/poisson_gam")
 
 ## Compile TMB Code ----
-# compile(paste0(tmbpath,".cpp"))
+ compile(paste0(tmbpath,".cpp"))
 dyn.load(dynlib(tmbpath))
 
 ## Function to fit a Poisson GAM ----

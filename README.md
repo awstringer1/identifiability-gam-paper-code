@@ -8,6 +8,7 @@ The code requires the following packages:
 ```
 install.packages(
   "tidyverse",
+  "here",
   "mgcv",
   "TMB",
   "Matrix",
@@ -16,7 +17,8 @@ install.packages(
 )
 ```
 
-To run scripts `02` and `03`, currently you have to first manually set your working directory to be the root directory of this repository (where the scripts are), or otherwise change `tmbpath` at the top of each script. This will be fixed when the `github` repository eventually becomes public.
+Note: the `here` package is only required for portability of relative file paths, to make it a little easier to execute these scripts yourself.
+It isn't required to reproduce the results in the paper.
 
 ## Code
 

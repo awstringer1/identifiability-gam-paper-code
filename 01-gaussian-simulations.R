@@ -151,11 +151,7 @@ results <- simframe %>%
   mutate(across(contains("covr"),~.x*100))
 
 # Print nicely for paper
-knitr::kable(
-  results,
-  format = 'latex',
-  digits = 2
-)
+knitr::kable(results,format = 'latex',digits = 2)
 
 # Save
 write_csv(results,file = file.path(resultspath,"gaussian-simulation-results.csv"))
