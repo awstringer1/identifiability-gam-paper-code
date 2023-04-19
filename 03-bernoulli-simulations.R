@@ -68,8 +68,6 @@ fit_bernoulli_gam <- function(smooth,dat,preddat=dat,constr,method=c('BFGS','tru
   
   ## MODEL SETUP ##
   # 1: SMOOTHS #
-  Xr <- Xf <- mam::newsparsemat(nrow(dat),0)
-  Xrpred <- Xfpred <- mam::newsparsemat(nrow(preddat),0)
   numsmooth <- 0
   r <- 0
   if (!is.null(smooth)) {
@@ -129,7 +127,7 @@ fit_bernoulli_gam <- function(smooth,dat,preddat=dat,constr,method=c('BFGS','tru
     UFlist <- mapply(
       function(x,y,z) {
         if (y<z) return(x[ ,(1+y):z])
-        mam::newsparsemat(z,z)
+        #mam::newsparsemat(z,z)
       },lapply(EE,'[[','vectors'),r,p,SIMPLIFY = FALSE)
     URlist <- lapply(URlist,cbind) # Ensure they stay matrices
     UFlist <- lapply(UFlist,cbind) # Ensure they stay matrices
@@ -231,7 +229,7 @@ fit_model_constr <- function(cc,dat,preddat) {
   cc <- cc / norm(cc,type='2')
   # Fit model subject to t(cc)%*%beta = 0
   vv <- tryCatch(fit_bernoulli_gam(smooth,dat,preddat,constr = cc,method='BFGS')$sd^2,error=function(e) e)
-  if (inherits(vv,'condition')) return(999)
+  if (inherits(vv,'condition')) return(-999)
   mean(sqrt(vv))
 }
 
@@ -247,7 +245,8 @@ doopt <- function(lst) {
   # Generate a data set
   x1 <- runif(n)
   eta <- truefunc(x1) + alpha
-  y <- rbinom(n,1,mam::ilogit(eta))
+  ilogit <- function(x) 1/(1+exp(-x))
+  y <- rbinom(n,1,ilogit(eta))
   dat <- data.frame(x1=x1,y=y)
   preddat <- data.frame(
     x1 = seq(min(x1),max(x1),length.out=pn)
@@ -280,11 +279,14 @@ doopt <- function(lst) {
   )
 }
 
+
+
+
 # Do the simulations
 simstodo <- expand.grid(n=n,id=1:B)
 simlist <- vector(mode='list',length=nrow(simstodo))
 for (i in 1:nrow(simstodo)) simlist[[i]] <- simstodo[i, ]
-set.seed(5206726)
+set.seed(76113963)
 mc.reset.stream()
 cat("Doing",nrow(simstodo),"total simulations...\n")
 tm <- Sys.time()
@@ -299,7 +301,7 @@ write_csv(simframe,file.path(resultspath,"bernoulli-optconstraint-sims.csv"))
 
 # Summarize results
 results <- simframe %>%
-  filter(stz > -1) %>%
+  filter(stz > -1,optimal > -1) %>%
   mutate(sddiff = stz - optimal) %>%
   group_by(n) %>%
   summarize(mn = mean(sddiff),se = sd(sddiff)) %>%
@@ -314,6 +316,6 @@ results
 # 
 # |   n|      mn|      se|
 # |---:|-------:|-------:|
-# |  50| 0.65382| 5.66328|
-# | 100| 0.01050| 0.03926|
-# | 200| 0.00143| 0.00102|
+# |  50| 0.05745| 0.20819|
+# | 100| 0.00765| 0.01933|
+# | 200| 0.00155| 0.00119|

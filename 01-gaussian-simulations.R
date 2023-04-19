@@ -5,7 +5,6 @@
 # Alex Stringer
 # 2022/05
 
-set.seed(134678)
 ## Global parameters ----
 n <- c(200,500,1000)
 f1 <- function(x) sin(2*pi*x) # Smooth function 1
@@ -13,7 +12,8 @@ f2 <- function(x) cos(2*pi*x) # Smooth function 2
 alpha <- 2 # Intercept
 sigma <- 1 # Gaussian SD
 B <- 1e03 # Number of simulated datasets to produce
-
+# Reproducible random number generation with mclapply
+RNGkind("L'Ecuyer-CMRG")
 ## Setup ----
 # Packages
 library(mgcv)
@@ -139,6 +139,8 @@ simlist <- vector(mode='list',length=nrow(simstodo))
 for (i in 1:nrow(simstodo)) simlist[[i]] <- simstodo[i, ]
 cat("Doing",nrow(simstodo),"total simulations...\n")
 tm <- Sys.time()
+set.seed(476329)
+mc.reset.stream()
 sims <- mclapply(simlist,do_a_simulation)
 simframe <- bind_rows(sims) %>% as_tibble()
 dt <- round(as.numeric(difftime(Sys.time(),tm,units='secs')))
@@ -151,7 +153,27 @@ results <- simframe %>%
   mutate(across(contains("covr"),~.x*100))
 
 # Print nicely for paper
-knitr::kable(results,format = 'latex',digits = 2)
+knitr::kable(results,format = 'markdown',digits = 2)
+# 
+# 
+# |var |    n| RMSE_stz_mean| RMSE_stz_sd| RMSE_pc1_mean| RMSE_pc1_sd| RMSE_pc2_mean| RMSE_pc2_sd| SE_stz_mean| SE_stz_sd| SE_pc1_mean| SE_pc1_sd| SE_pc2_mean| SE_pc2_sd| covr_stz_mean| covr_stz_sd| covr_pc1_mean| covr_pc1_sd| covr_pc2_mean| covr_pc2_sd|
+# |:---|----:|-------------:|-----------:|-------------:|-----------:|-------------:|-----------:|-----------:|---------:|-----------:|---------:|-----------:|---------:|-------------:|-----------:|-------------:|-----------:|-------------:|-----------:|
+# |x1  |  200|          0.14|        0.05|          0.18|        0.07|          0.19|        0.08|        0.15|      0.01|        0.20|      0.01|        0.21|      0.02|         96.30|        7.92|         97.65|        6.27|         96.34|        9.44|
+# |x1  |  500|          0.10|        0.03|          0.13|        0.05|          0.13|        0.05|        0.11|      0.00|        0.14|      0.01|        0.14|      0.01|         96.75|        6.31|         97.24|        7.12|         96.99|        7.93|
+# |x1  | 1000|          0.07|        0.02|          0.10|        0.04|          0.10|        0.04|        0.08|      0.00|        0.10|      0.00|        0.11|      0.00|         96.68|        5.92|         97.10|        7.45|         96.98|        7.38|
+# |x2  |  200|          0.14|        0.04|          0.19|        0.08|          0.19|        0.08|        0.15|      0.01|        0.19|      0.01|        0.20|      0.01|         95.71|        8.22|         95.74|        9.66|         95.11|       10.77|
+# |x2  |  500|          0.10|        0.03|          0.13|        0.05|          0.13|        0.05|        0.10|      0.00|        0.13|      0.01|        0.14|      0.01|         96.07|        6.86|         96.26|        8.60|         95.77|        9.37|
+# |x2  | 1000|          0.07|        0.02|          0.09|        0.03|          0.10|        0.04|        0.08|      0.00|        0.10|      0.00|        0.10|      0.00|         96.39|        6.44|         96.77|        7.46|         96.27|        8.77|
+# 
+# 
+# |var |    n| RMSE_stz_mean| RMSE_stz_sd| RMSE_pc1_mean| RMSE_pc1_sd| RMSE_pc2_mean| RMSE_pc2_sd| SE_stz_mean| SE_stz_sd| SE_pc1_mean| SE_pc1_sd| SE_pc2_mean| SE_pc2_sd| covr_stz_mean| covr_stz_sd| covr_pc1_mean| covr_pc1_sd| covr_pc2_mean| covr_pc2_sd|
+# |:---|----:|-------------:|-----------:|-------------:|-----------:|-------------:|-----------:|-----------:|---------:|-----------:|---------:|-----------:|---------:|-------------:|-----------:|-------------:|-----------:|-------------:|-----------:|
+# |x1  |  200|          0.14|        0.05|          0.18|        0.07|          0.19|        0.08|        0.15|      0.01|        0.20|      0.01|        0.21|      0.02|         96.30|        7.92|         97.65|        6.27|         96.34|        9.44|
+# |x1  |  500|          0.10|        0.03|          0.13|        0.05|          0.13|        0.05|        0.11|      0.00|        0.14|      0.01|        0.14|      0.01|         96.75|        6.31|         97.24|        7.12|         96.99|        7.93|
+# |x1  | 1000|          0.07|        0.02|          0.10|        0.04|          0.10|        0.04|        0.08|      0.00|        0.10|      0.00|        0.11|      0.00|         96.68|        5.92|         97.10|        7.45|         96.98|        7.38|
+# |x2  |  200|          0.14|        0.04|          0.19|        0.08|          0.19|        0.08|        0.15|      0.01|        0.19|      0.01|        0.20|      0.01|         95.71|        8.22|         95.74|        9.66|         95.11|       10.77|
+# |x2  |  500|          0.10|        0.03|          0.13|        0.05|          0.13|        0.05|        0.10|      0.00|        0.13|      0.01|        0.14|      0.01|         96.07|        6.86|         96.26|        8.60|         95.77|        9.37|
+# |x2  | 1000|          0.07|        0.02|          0.09|        0.03|          0.10|        0.04|        0.08|      0.00|        0.10|      0.00|        0.10|      0.00|         96.39|        6.44|         96.77|        7.46|         96.27|        8.77|
 
 # Save
 write_csv(results,file = file.path(resultspath,"gaussian-simulation-results.csv"))
