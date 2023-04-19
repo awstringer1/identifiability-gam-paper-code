@@ -6,8 +6,6 @@
 # Alex Stringer
 # 2022/05
 
-set.seed(5432689)
-
 ## Load Libraries ----
 library(tidyverse)
 library(here)
@@ -19,6 +17,8 @@ library(Matrix)
 library(parallel)
 options(mc.cores = parallel::detectCores())
 
+# Reproducible random number generation
+RNGkind("L'Ecuyer-CMRG")
 ## Global parameters ----
 # Number of simulations to do
 B <- 100
@@ -284,6 +284,8 @@ doopt <- function(lst) {
 simstodo <- expand.grid(n=n,id=1:B)
 simlist <- vector(mode='list',length=nrow(simstodo))
 for (i in 1:nrow(simstodo)) simlist[[i]] <- simstodo[i, ]
+set.seed(5206726)
+mc.reset.stream()
 cat("Doing",nrow(simstodo),"total simulations...\n")
 tm <- Sys.time()
 sims <- mclapply(simlist,doopt)
@@ -296,7 +298,7 @@ write_csv(simframe,file.path(resultspath,"bernoulli-optconstraint-sims.csv"))
 # simframe <- read_csv(file.path(resultspath,"bernoulli-optconstraint-sims.csv"))
 
 # Summarize results
-simframe %>%
+results <- simframe %>%
   filter(stz > -1) %>%
   mutate(sddiff = stz - optimal) %>%
   group_by(n) %>%
@@ -307,3 +309,11 @@ simframe %>%
     format = 'markdown'
   )
 
+results
+# 
+# 
+# |   n|      mn|      se|
+# |---:|-------:|-------:|
+# |  50| 0.65382| 5.66328|
+# | 100| 0.01050| 0.03926|
+# | 200| 0.00143| 0.00102|

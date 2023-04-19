@@ -5,7 +5,6 @@
 # Section 4.2
 # Alex Stringer
 # 2022/05
-
 ## Load Libraries ----
 library(tidyverse)
 library(here)
@@ -285,12 +284,14 @@ doopt <- function(lst) {
 }
 
 # Do the simulations
+set.seed(3279)
 simstodo <- expand.grid(n=n,id=1:B)
 simlist <- vector(mode='list',length=nrow(simstodo))
 for (i in 1:nrow(simstodo)) simlist[[i]] <- simstodo[i, ]
 cat("Doing",nrow(simstodo),"total simulations...\n")
 tm <- Sys.time()
-sims <- mclapply(simlist,doopt)
+#sims <- mclapply(simlist,doopt)
+sims <- lapply(simlist,doopt)
 simframe <- bind_rows(sims) %>% as_tibble()
 dt <- round(as.numeric(difftime(Sys.time(),tm,units='secs')))
 cat("Finished simulations, they took",dt,"seconds.\n")
