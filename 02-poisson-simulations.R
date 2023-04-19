@@ -30,6 +30,8 @@ pn <- 100
 # Smooth specification- thin plate regression spline with defaults
 smooth <- list(s(x1))
 
+# Reproducible random number generation
+RNGkind("L'Ecuyer-CMRG")
 
 ## Set Paths ----
 
@@ -67,8 +69,6 @@ fit_poisson_gam <- function(smooth,dat,preddat=dat,constr,method=c('BFGS','trust
   
   ## MODEL SETUP ##
   # 1: SMOOTHS #
-  Xr <- Xf <- mam::newsparsemat(nrow(dat),0)
-  Xrpred <- Xfpred <- mam::newsparsemat(nrow(preddat),0)
   numsmooth <- 0
   r <- 0
   if (!is.null(smooth)) {
@@ -231,7 +231,7 @@ fit_poisson_gam <- function(smooth,dat,preddat=dat,constr,method=c('BFGS','trust
 fit_model_constr <- function(cc,dat,preddat) {
   cc <- cc / norm(cc,type='2') # Numerical stability; Z is invariant to ||c||.
   vv <- tryCatch(fit_poisson_gam(smooth,dat,preddat,constr = cc,method='BFGS')$sd^2,error=function(e) e)
-  if (inherits(vv,'condition')) return(999)
+  if (inherits(vv,'condition')) return(-999)
   mean(sqrt(vv))
 }
 
@@ -290,8 +290,8 @@ simlist <- vector(mode='list',length=nrow(simstodo))
 for (i in 1:nrow(simstodo)) simlist[[i]] <- simstodo[i, ]
 cat("Doing",nrow(simstodo),"total simulations...\n")
 tm <- Sys.time()
-#sims <- mclapply(simlist,doopt)
-sims <- lapply(simlist,doopt)
+mc.reset.stream()
+sims <- mclapply(simlist,doopt)
 simframe <- bind_rows(sims) %>% as_tibble()
 dt <- round(as.numeric(difftime(Sys.time(),tm,units='secs')))
 cat("Finished simulations, they took",dt,"seconds.\n")
@@ -301,8 +301,8 @@ write_csv(simframe,file.path(resultspath,"poisson-optconstraint-sims.csv"))
 # simframe <- read_csv(file.path(resultspath,"poisson-optconstraint-sims.csv"))
 
 # Summarize results
-simframe %>%
-  filter(stz > -1) %>%
+results <- simframe %>%
+  filter(stz > -1,optimal > -1) %>%
   mutate(sddiff = stz - optimal) %>%
   group_by(n) %>%
   summarize(mn = mean(sddiff),se = sd(sddiff)) %>%
@@ -311,4 +311,11 @@ simframe %>%
     format = 'markdown'
   )
 
-
+results
+# 
+# 
+# |   n|      mn|      se|
+# |---:|-------:|-------:|
+# |  50| 0.00168| 0.00097|
+# | 100| 0.00077| 0.00046|
+# | 200| 0.00042| 0.00017|
