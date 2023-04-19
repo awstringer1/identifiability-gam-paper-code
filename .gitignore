@@ -39,6 +39,11 @@ vignettes/*.pdf
 .Renviron
 
 # c++ compilation files
+<<<<<<< HEAD
 /*.o
 /*.so
+=======
+*.o
+*.so
+>>>>>>> e7eb3cb7953653eb9a7da99fa9c1509742152a90
 
