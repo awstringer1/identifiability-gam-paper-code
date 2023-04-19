@@ -88,7 +88,9 @@ se_pc_pm10 <- pred_pc$se.fit[, 's(pm10)']
 
 textsize <- 1.5
 
-pdf(file = file.path(resultspath,'chicago-time-plot.pdf'),width=14,height=7)
+#pdf(file = file.path(resultspath,'chicago-time-plot.pdf'),width=14,height=7)
+setEPS(width=14,height=7)
+postscript(file = file.path(resultspath,'chicago-time-plot.pdf'))
 plot(preddat$time,fit_stz_time-pred_center_time,type='l',xlab="Time",ylab="f(Time)",cex.axis=textsize,cex.lab=textsize,ylim = c(-.25,.07))
 lines(preddat$time,fit_stz_time-pred_center_time - 2*se_stz_time,lty='dashed')
 lines(preddat$time,fit_stz_time-pred_center_time + 2*se_stz_time,lty='dashed')
@@ -100,7 +102,9 @@ lines(preddat$time,fit_pc_time + 2*se_pc_time,lty='dotted')
 rug(preddat$time,lwd=.1)
 dev.off()
 
-pdf(file = file.path(resultspath,'chicago-pm10-plot.pdf'),width=14,height=7)
+#pdf(file = file.path(resultspath,'chicago-pm10-plot.pdf'),width=14,height=7)
+setEPS(width=14,height=7)
+postscript(file = file.path(resultspath,'chicago-pm10-plot.pdf'))
 plot(preddat$pm10,fit_stz_pm10-pred_center_pm10,type='l',xlab="PM10",ylab="f(PM10)",cex.axis=textsize,cex.lab=textsize)
 lines(preddat$pm10,fit_stz_pm10-pred_center_pm10 - 2*se_stz_pm10,lty='dashed')
 lines(preddat$pm10,fit_stz_pm10-pred_center_pm10 + 2*se_stz_pm10,lty='dashed')
@@ -123,7 +127,4 @@ mean(abs(meanpred_stz$fit - meanpred_pc$fit))
 mean(meanpred_pc$se.fit - meanpred_stz$se.fit)
 # Identical
 
-
-
-
-
+cat("Finished fitting air pollution model, results available at:",resultspath,"\n")
