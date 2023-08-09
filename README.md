@@ -1,6 +1,8 @@
 # Identifiability Constraints in Generalized Additive Models
 
-This repository contains code for reproducing the analysis in the paper *Identifiability Constraints in Generalized Additive Models*.
+This repository contains code for reproducing the analysis in the paper *Identifiability Constraints in Generalized Additive Models*, [published](https://onlinelibrary.wiley.com/doi/10.1002/cjs.11786) in the *Canadian Journal of Statistics* (open-access):
+
+Stringer, A. (2023). Identifiability Constraints in Generalized Additive Models. *Canadian Journal of Statistics* (to appear).
 
 ## Preparation
 
